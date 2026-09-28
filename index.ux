@@ -1,0 +1,32 @@
+<template>
+  <div class="vela">
+    <image style="margin-top: 300px" src="/common/start.png" @click="game" />
+    <text class="text">长按背包退出</text>
+  </div>
+</template>
+
+<script>
+import router from "@system.router"
+
+export default {
+  game() {
+    router.push({
+      uri: "/pages/game"
+    })
+  }
+}
+</script>
+
+<style>
+.vela {
+  flex-direction: column;
+  align-items: center;
+  background-image: url("common/bg.png");
+  width: 212px;
+  height: 520px;
+}
+.text {
+  color: white;
+  font-size: 24px;
+}
+</style>

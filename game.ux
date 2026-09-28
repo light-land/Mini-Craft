@@ -1,0 +1,396 @@
+<template>
+  <div class="vela" style="height: 520px; width: 212px">
+    <stack class="vela" style="height: 520px; width: 212px">
+      <!--游戏区-->
+      <div class="vela" style="height: 520px; width: 212px; left: 0px; top: 0px">
+        <!--顶部-->
+        <div style="height: 106px">
+          <div style="margin-top: 12px" if="{{ sbag }}">
+            <input
+              class="btn"
+              style="width: 57px; background-color: #4285f4"
+              type="button"
+              value="关闭"
+              @click="cbag"
+            />
+            <input
+              class="btn"
+              style="width: 57px; background-color: #fbbc05; margin-left: 10px"
+              type="button"
+              value="合成"
+              @click="hc"
+            />
+            <input
+              class="btn"
+              style="width: 57px; background-color: #34a853; margin-left: 10px"
+              type="button"
+              value="装备"
+              @click="zb"
+            />
+          </div>
+          <div style="margin-top: 12px" elif="{{ edit }}">
+            <div if="{{ map[choose].block=='air' }}">
+              <input
+                class="btn"
+                style="width: 91px; background-color: #4285f4"
+                type="button"
+                value="取消"
+                @click="cedit"
+              />
+              <input
+                class="btn"
+                style="width: 91px; background-color: #34a853; margin-left: 10px"
+                type="button"
+                value="放置"
+                @click="fz"
+              />
+            </div>
+            <div elif="{{ map[choose].block=='bedrock' }}">
+              <input
+                class="btn"
+                style="width: 192px; background-color: #4285f4"
+                type="button"
+                value="取消"
+                @click="cedit"
+              />
+            </div>
+            <div else>
+              <input
+                class="btn"
+                style="width: 57px; background-color: #4285f4"
+                type="button"
+                value="取消"
+                @click="cedit"
+              />
+              <input
+                class="btn"
+                style="width: 57px; background-color: #fbbc05; margin-left: 10px"
+                type="button"
+                value="交互"
+                @click="jh"
+              />
+              <input
+                class="btn"
+                style="width: 57px; background-color: #ea4335; margin-left: 10px"
+                type="button"
+                value="挖掘"
+                @longpress="wj"
+              />
+            </div>
+          </div>
+          <div style="margin-top: 12px" else>
+            <input
+              class="btn"
+              style="width: 57px; background-color: #4285f4"
+              type="button"
+              value="背包"
+              @click="obag"
+              @longpress="back"
+            />
+            <input
+              class="btn"
+              style="width: 57px; background-color: #34a853; margin-left: 10px"
+              type="button"
+              value="使用"
+              @click="use"
+            />
+            <input
+              class="btn"
+              style="width: 57px; background-color: #ea4335; margin-left: 10px"
+              type="button"
+              value="攻击"
+              @touchstart="attack"
+            />
+          </div>
+        </div>
+        <!--游戏-->
+        <stack style="height: 240px; width: 210px;left: {{ px }};right: {{ py }}">
+          <!--地图-->
+          <image
+            for="{{ map }}"
+            src="/common/block/{{ $item.block }}.png"
+            style="left: {{ $item.id%7*30 }}px; top: {{ ($item.id-$item.id%7)/7*30 }}px"
+            @click="editb($item.id)"
+          />
+          <!--选择-->
+          <div
+            for="{{ map }}"
+            class="cho"
+            style="left: {{ $item.id%7*30 }}px; top: {{ ($item.id-$item.id%7)/7*30 }}px;border-color: {{ color[$item.block] }}"
+            show="{{ $item.id ==choose }}"
+          ></div>
+          <!--玩家-->
+          <image
+            src="/common/player/steve/{{ direction }}.png"
+            style="left: {{ px }}px; top: 186px"
+          />
+        </stack>
+        <!--进度条-->
+        <div style="height: 15px; width: 212px; background-color: #87ceeb">
+          <progress
+            style="
+              stroke-width: 11px;
+              width: 103px;
+              color: #ee4a3b;
+              background-color: #000;
+              margin-left: 2px;
+            "
+            percent="{{ p=sm }}"
+          ></progress>
+          <progress
+            style="
+              stroke-width: 11px;
+              width: 103px;
+              color: #f39c12;
+              background-color: #000;
+              margin-left: 2px;
+            "
+            percent="{{ je }}"
+          ></progress>
+        </div>
+        <!--物品-->
+        <div style="height: 53px; width: 212px; background-color: #c5c5c5">
+          <stack
+            class="wp"
+            style="margin-top: 2px; margin-left: 3px"
+            for="{{ wpl }}"
+            @click="chowpl($item.id)"
+          >
+            <image style="left: 10px; top: 10px" src="/common/block/{{ $item.block }}.png" />
+            <text style="left: 24px; top: 12px; color: white; font-size: 16px">
+              {{ $item.num }}
+            </text>
+            <div show="{{ $item.id==chowp }}" class="chowp"></div>
+          </stack>
+        </div>
+        <!--底部-->
+        <div style="height: 106px">
+          <div style="margin-top: 8px">
+            <input
+              class="btn"
+              style="width: 57px; background-color: #4285f4"
+              type="button"
+              value="←"
+              @touchstart="tsl"
+              @touchend="tel"
+            />
+            <input
+              class="btn"
+              style="width: 57px; background-color: #34a853; margin-left: 10px"
+              type="button"
+              value="↑"
+              @touchstart="tsj"
+              @touchend="tej"
+            />
+            <input
+              class="btn"
+              style="width: 57px; background-color: #ea4335; margin-left: 10px"
+              type="button"
+              value="→"
+              @touchstart="tsr"
+              @touchend="ter"
+            />
+          </div>
+        </div>
+      </div>
+      <!--背包-->
+      <div
+        show="{{ sbag }}"
+        style="height: 308px; width: 212px; left: 0px; top: 106px; background-color: #c5c5c5"
+      ></div>
+    </stack>
+  </div>
+</template>
+
+<script>
+import router from "@system.router"
+import app from "@system.app"
+
+export default {
+  data: {
+    map: [
+      {id: 0, block: "air"},
+      {id: 1, block: "air"},
+      {id: 2, block: "air"},
+      {id: 3, block: "air"},
+      {id: 4, block: "air"},
+      {id: 5, block: "air"},
+      {id: 6, block: "air"},
+      {id: 7, block: "air"},
+      {id: 8, block: "air"},
+      {id: 9, block: "air"},
+      {id: 10, block: "air"},
+      {id: 11, block: "air"},
+      {id: 12, block: "air"},
+      {id: 13, block: "air"},
+      {id: 14, block: "grass"},
+      {id: 15, block: "grass"},
+      {id: 16, block: "grass"},
+      {id: 17, block: "grass"},
+      {id: 18, block: "grass"},
+      {id: 19, block: "grass"},
+      {id: 20, block: "grass"},
+      {id: 21, block: "dirt"},
+      {id: 22, block: "dirt"},
+      {id: 23, block: "dirt"},
+      {id: 24, block: "dirt"},
+      {id: 25, block: "dirt"},
+      {id: 26, block: "dirt"},
+      {id: 27, block: "dirt"},
+      {id: 28, block: "dirt"},
+      {id: 29, block: "dirt"},
+      {id: 30, block: "dirt"},
+      {id: 31, block: "dirt"},
+      {id: 32, block: "dirt"},
+      {id: 33, block: "dirt"},
+      {id: 34, block: "dirt"},
+      {id: 35, block: "stone"},
+      {id: 36, block: "stone"},
+      {id: 37, block: "stone"},
+      {id: 38, block: "stone"},
+      {id: 39, block: "stone"},
+      {id: 40, block: "stone"},
+      {id: 41, block: "stone"},
+      {id: 42, block: "stone"},
+      {id: 43, block: "stone"},
+      {id: 44, block: "stone"},
+      {id: 45, block: "stone"},
+      {id: 46, block: "stone"},
+      {id: 47, block: "stone"},
+      {id: 48, block: "stone"},
+      {id: 49, block: "bedrock"},
+      {id: 50, block: "bedrock"},
+      {id: 51, block: "bedrock"},
+      {id: 52, block: "bedrock"},
+      {id: 53, block: "bedrock"},
+      {id: 54, block: "bedrock"},
+      {id: 55, block: "bedrock"}
+    ],
+    color: {
+      grass: "#ea4335",
+      bedrock: "#000000",
+      air: "#34a853",
+      dirt: "#ea4335",
+      stone: "#ea4335"
+    },
+    wpl: [
+      {id: 0, block: "grass", num: "16"},
+      {id: 1, block: "dirt", num: "16"},
+      {id: 2, block: "stone", num: "16"},
+      {id: 3, block: "air", num: "0"}
+    ],
+    edit: false,
+    sbag: false,
+    direction: "l",
+    ml: false,
+    mr: false,
+    px: 99,
+    sm: 80,
+    je: 80,
+    choose: -1,
+    chowp: 0
+  },
+  back() {
+    router.back()
+  },
+  obag() {
+    this.sbag = true
+  },
+  cbag() {
+    this.sbag = false
+  },
+  editb(id) {
+    this.choose = id
+    this.edit = true
+  },
+  chowpl(id) {
+    this.chowp = id
+  },
+  cedit() {
+    this.edit = false
+    this.choose = -1
+  },
+  wj() {
+    this.map[this.choose].block = "air"
+    this.edit = false
+    this.choose = -1
+  },
+  fz() {
+    if (this.wpl[this.chowp].num >= 1) {
+      this.map[this.choose].block = this.wpl[this.chowp].block
+      this.wpl[this.chowp].num -= 1
+    }
+    this.choose = -1
+    this.edit = false
+  },
+  tsl() {
+    this.ml = true
+    this.direction = "l"
+    this.edit = false
+    this.choose = -1
+  },
+  tsr() {
+    this.mr = true
+    this.direction = "r"
+    this.edit = false
+    this.choose = -1
+  },
+  tel() {
+    this.ml = false
+  },
+  ter() {
+    this.mr = false
+  },
+  onInit() {
+    this.move()
+    this.timer = setInterval(() => {
+      this.move()
+    }, 50)
+  },
+  onDestroy() {
+    if (this.timer) {
+      clearInterval(this.timer)
+    }
+  },
+  move() {
+    if (this.ml) {
+      this.px -= 5
+    }
+    if (this.mr) {
+      this.px += 5
+    }
+  }
+}
+</script>
+
+<style>
+.vela {
+  flex-direction: column;
+  align-items: center;
+  background-color: #87ceeb;
+}
+.btn {
+  height: 86px;
+  border-radius: 8px;
+  font-size: 28px;
+  color: #ffffff;
+}
+.cho {
+  width: 30px;
+  height: 30px;
+  border-style: solid;
+  border-width: 3px;
+}
+.chowp {
+  width: 49px;
+  height: 49px;
+  border-style: solid;
+  border-width: 3px;
+  border-color: #ffffff;
+}
+.wp {
+  width: 49px;
+  height: 49px;
+  background-color: #aaaaaa;
+}
+</style>
